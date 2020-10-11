@@ -1,0 +1,5 @@
+forward 10
+turn left
+turn right
+dock
+refuel 10
