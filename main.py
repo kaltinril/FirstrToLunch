@@ -13,9 +13,7 @@ def loadfile(filename):
     for command in command_list_input:
         command_list.append(command.lower().strip())
 
-    print(command_list)
     command_file.close()
-
     return command_list
 
 
