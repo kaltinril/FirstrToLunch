@@ -1,0 +1,13 @@
+forward 1
+turn right
+forward 1
+forward 1
+forward 1
+forward 1
+forward 1
+turn left
+forward 1
+turn right
+forward 1
+forward 1
+dock

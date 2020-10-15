@@ -1,0 +1,7 @@
+forward 5
+turn left
+forward 2
+turn right
+forward 13
+dock
+refuel 10
