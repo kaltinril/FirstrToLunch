@@ -1,25 +1,25 @@
 -E                     1              A      -
--                 a                          -
--    S     A              !                  -
--                               a            -
--                             a      a       -
--                        a  a                -
--    a                 A        2            -
+-                 a         A  a             -
+-    S     A              !       a          -
 -                                            -
--                     a           @          -
--                   a  A                     -
--  A             A                           -
+-                             a   A  a       -
+-                        a  a                -
+-    a                   A      2            -
+-              a                             -
+-         a      a                @          -
+-                   a a                      -
+-  A        a    A     A                     -
 -                  a                       a -
--                               A            -
+-     a                         A            -
 -                   3                        -
--                #                           -
+-        A       #                           -
 -  a                                         -
 -                                            -
 -                                           A-
 -             a                              -
--                a                           -
+-    F           a                           -
 -    5         a   A  a             $        -
--            A                               -
+- %          A                               -
 -                                            -
 -          A                       4         -
 -                                            -

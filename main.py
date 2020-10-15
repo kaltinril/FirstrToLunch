@@ -5,6 +5,7 @@ import sys
 import pygame
 from pygame.locals import * # Things like QUIT
 import math
+from player import Player
 
 SCREEN_WIDTH = 1440
 SCREEN_HEIGHT = 900
@@ -79,13 +80,6 @@ def load_map_file(filename):
     return game_map, objects
 
 
-def rot_center(image, rect, angle):
-    """rotate an image while keeping its center"""
-    rot_image = pygame.transform.rotate(image, angle)
-    rot_rect = rot_image.get_rect(center=rect.center)
-    return rot_image, rot_rect
-
-
 def draw_board(screen, objects, object_images, rotate_angle):
 
     for o in objects:
@@ -104,24 +98,41 @@ def draw_board(screen, objects, object_images, rotate_angle):
         elif o[0] == '%':
             screen.blit(object_images[5], (o[1], o[2]))
         elif o[0] == '1':
-            screen.blit(object_images[7], (o[1], o[2]))
+            adj = (40 * math.sin(rotate_angle / 16))
+            screen.blit(pygame.transform.rotate(object_images[7], adj), (o[1], o[2]))
         elif o[0] == '2':
-            screen.blit(object_images[8], (o[1], o[2]))
+            adj = (40 * math.sin(rotate_angle / 16))
+            screen.blit(pygame.transform.rotate(object_images[8], adj), (o[1], o[2]))
         elif o[0] == '3':
-            screen.blit(object_images[9], (o[1], o[2]))
+            adj = (40 * math.sin(rotate_angle / 16))
+            screen.blit(pygame.transform.rotate(object_images[9], adj), (o[1], o[2]))
         elif o[0] == '4':
-            screen.blit(object_images[10], (o[1], o[2]))
+            adj = (40 * math.sin(rotate_angle / 16))
+            screen.blit(pygame.transform.rotate(object_images[10], adj), (o[1], o[2]))
         elif o[0] == '5':
-            screen.blit(object_images[11], (o[1], o[2]))
+            adj = (40 * math.sin(rotate_angle / 16))
+            screen.blit(pygame.transform.rotate(object_images[11], adj), (o[1], o[2]))
         elif o[0] == 'E':
             screen.blit(object_images[13], (o[1], o[2]))
         elif o[0] == 'S':
-            #sin = math
-            #scaled = pygame.transform.scale(object_images[14], (32*(rotate_angle / 360), 720))
-            screen.blit(object_images[14], (o[1], o[2]))
+            adj = math.sin(rotate_angle / 4)
+            scaled = pygame.transform.scale(object_images[14], (32 + int(adj * 5), 32 + int(adj * 5)))
+            screen.blit(scaled, (o[1], o[2]))
+        elif o[0] == 'F':
+            adj = math.sin(rotate_angle / 4)
+            scaled = pygame.transform.scale(object_images[15], (32 - int(adj * 5), 32 - int(adj * 5)))
+            screen.blit(scaled, (o[1], o[2]))
 
     return 0
 
+
+def rot_center(image, angle):
+    """rotate a Surface, maintaining position."""
+
+    loc = image.get_rect().center  #rot_image is not defined
+    rot_sprite = pygame.transform.rotate(image, angle)
+    rot_sprite.get_rect().center = loc
+    return rot_sprite
 
 
 def main():
@@ -172,15 +183,45 @@ def main():
     earth = pygame.transform.scale(earth, (128, 128))
     start = pygame.image.load('images/start.png')
     start = pygame.transform.scale(start, (32, 32))
+    flags = pygame.image.load('images/flags.png')
+    flags = pygame.transform.scale(flags, (32, 32))
+
+    rocket = pygame.image.load('images/rocket.png')
+    rocket = pygame.transform.scale(rocket, (32, 32))
 
     object_images = [orange, cloudy, vines, rings, goo, bluered, station,
                      img_one, img_two, img_three, img_four, img_five,
                      asteroid1,
-                     earth, start]
+                     earth, start, flags,
+                     rocket]
 
-    command_list = load_command_file("commands.txt")
-
+    # Load map
     game_map, objects = load_map_file("gameboard.txt")
+
+    # Get starting location
+    start_pos = [0, 0]
+    for o in objects:
+        if o[0] == 'S':
+            start_pos[0] = int(o[1] / 32)
+            start_pos[1] = int(o[2] / 32)
+
+    # Load players
+    player1_list = load_command_file("player1.txt")
+    player2_list = load_command_file("player2.txt")
+    player3_list = load_command_file("player3.txt")
+    player4_list = load_command_file("player4.txt")
+    player5_list = load_command_file("player5.txt")
+
+    p1 = Player('Chris', 10, player1_list)
+    p2 = Player('Johnise', 10, player2_list)
+    p3 = Player('Steve', 10, player3_list)
+    p4 = Player('Marty', 10, player4_list)
+    p5 = Player('Cé', 10, player5_list)
+
+    players = [p1, p2, p3, p4, p5]
+
+    for p in players:
+        p.set_position(start_pos.copy())
 
     # game loop
     fps = 60.0
@@ -200,17 +241,13 @@ def main():
         # Draw grid
         for x in range(0, int(SCREEN_WIDTH / 32)):
             pygame.draw.line(gamescreen, BLACK, (x * 32, 0), (x * 32, SCREEN_HEIGHT))
-
         for y in range(0, int(SCREEN_HEIGHT / 32)):
             pygame.draw.line(gamescreen, BLACK, (0, y * 32), (SCREEN_WIDTH, y * 32))
 
         # Force to 60 FPS
         dt = fps_clock.tick(fps)
-        # time_elapsed_since_last_action += dt
-        # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
-        # if time_elapsed_since_last_action > 250:
-        #    snake.action()  # move the snake here
-        #     time_elapsed_since_last_action = 0  # reset it to 0 so you can count again
+        time_elapsed_since_last_action += dt
+
 
         # draw planets and obstacles
         positions = ''
@@ -221,8 +258,18 @@ def main():
 
 
         # draw players
+        for i in range(0, 5):
+            new_sprite = rot_center(object_images[16], -players[i].facing)
+            gamescreen.blit(new_sprite, (players[i].position[0] * 32, players[i].position[1] * 32))
         # update players positions
-        # wait 1 second
+
+        # wait 1 second before moving
+        # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
+        if time_elapsed_since_last_action > 1000:
+            for i in range(0, 5):
+                players[i].move(game_map)
+                players[i].debug_print()
+            time_elapsed_since_last_action = 0  # reset it to 0 so you can count again
 
         pygame.display.update()
 
