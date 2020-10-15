@@ -17,6 +17,18 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GRAY = (128, 128, 128)
 
+
+# Draw a string of text to the game screen
+# At the specific location
+# With the specific font and color
+# All method/functions must be defined before they are used
+def draw_text(screen, text, font, location, text_color):
+    text_surface = font.render(text, True, text_color)
+    text_rect = text_surface.get_rect()
+
+    text_rect.center = location
+    screen.blit(text_surface, text_rect)
+
 # Load file: Load a file and return the commands
 def load_command_file(filename):
     # Open the file and read all lines into a list
@@ -140,6 +152,9 @@ def main():
     pygame.init()
     gamescreen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+    # Setup game fonts
+    font = pygame.font.Font("freesansbold.ttf", 26)
+
     # Load game objects
     background = pygame.image.load('background.jpg')
     background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -223,6 +238,9 @@ def main():
     for p in players:
         p.set_position(start_pos.copy())
 
+    any_finished = False
+    all_finished = False
+
     # game loop
     fps = 60.0
     fps_clock = pygame.time.Clock()
@@ -260,16 +278,78 @@ def main():
         # draw players
         for i in range(0, 5):
             new_sprite = rot_center(object_images[16], -players[i].facing)
-            gamescreen.blit(new_sprite, (players[i].position[0] * 32, players[i].position[1] * 32))
+            x = players[i].position[0] * 32
+            y = players[i].position[1] * 32
+            gamescreen.blit(new_sprite, (x, y))
+            text_color = GREEN
+            if players[i].is_dead():
+                text_color = RED
+            elif players[i].no_fuel():
+                text_color = WHITE
+            elif players[i].no_moves():
+                text_color = BLUE
+
+            if y == 0:
+                y = y + 32 + 32
+
+            if not all_finished:
+                draw_text(gamescreen, players[i].name, font, (x + 16, y - 16), text_color)
+            else:
+                draw_text(gamescreen, players[i].name + " " + str(players[i].points), font, (x + 16, y - 16), text_color)
         # update players positions
 
         # wait 1 second before moving
         # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
-        if time_elapsed_since_last_action > 1000:
+        if time_elapsed_since_last_action > 250:
             for i in range(0, 5):
-                players[i].move(game_map)
-                players[i].debug_print()
+                players[i].move(game_map, any_finished)
+                # players[i].debug_print()
             time_elapsed_since_last_action = 0  # reset it to 0 so you can count again
+
+        # Check if anyone finished this round
+        total_complete = 0
+        for p in players:
+            if p.finished:
+                any_finished = True
+
+            if p.finished or p.complete or p.dead or p.no_fuel() or p.no_moves():
+                total_complete = total_complete + 1
+
+        if total_complete == len(players) and not all_finished:
+            all_finished = True
+
+            print("")
+            print("Game over!!!!")
+            print("")
+
+            # See who used the least fuel
+            least_id = 0
+            least_value = 100000
+            i = 0
+            for i in range(0, 5):
+                if players[i].total_fuel_used < least_value:
+                    least_value = players[i].total_fuel_used
+                    least_id = i
+            players[least_id].points = players[least_id].points + 10
+            print(players[least_id].name, "Got 10 points for least fuel used overall!")
+
+            # Check for players with more than 10 fuel left that finished
+            for i in range(0, 5):
+                if players[i].finished:
+                    if players[i].fuel > 10:
+                        players[i].points = players[i].points - 5
+                        print(players[i].name, "lost 5 points for finishing with more than 10 fuel")
+
+            # print out points:
+            print("")
+            print("====Final Point totals====")
+            print("")
+            for i in range(0, 5):
+                print(players[i].name, "got", players[i].points, "and had", players[i].fuel, "left over")
+
+
+
+
 
         pygame.display.update()
 

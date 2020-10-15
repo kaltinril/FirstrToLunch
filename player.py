@@ -9,13 +9,21 @@ class Player:
         self.position = [0, 0]
         self.current_action = ""
         self.complete = False
+        self.dead = False
         self.direction = [1, 0]
         self.facing = 0
+        self.docked = False
+        self.finished = False
+        self.points = 0
+        self.total_fuel_used = fuel
 
     def set_position(self, new_position):
         self.position = new_position
 
-    def move(self, game_map):
+    def move(self, game_map, any_finished):
+        if self.dead or self.finished:
+            return
+
         if self.current_action == "":
             if len(self.actions) > 0 and self.fuel > 0:
                 self.current_action = self.actions.pop(0)
@@ -41,10 +49,12 @@ class Player:
             else:
                 self.current_action = ""
 
+            if self.docked:
+                self.docked = False
+
             if game_map[self.position[0]][self.position[1]] in "Aa-":
-                self.fuel = 0
-                self.actions = ""
-                self.current_action = ""
+                self.dead = True
+                self.complete = True
                 print(self.name, " crashed!!!")
 
         # handle turn left
@@ -73,23 +83,54 @@ class Player:
 
         # handle dock
         if "dock" in self.current_action:
-            print(self.name, "is Docking!")
             self.current_action = ""
+            if self.docked:
+                print(self.name, "is already docked!")
+            if game_map[self.position[0]][self.position[1]] in "123456789":
+                print(self.name, "is Docking!")
+                self.docked = True
+            else:
+                print(self.name, "attempted to dock with a dust cloud!?")
 
         # handle refuel
         if "refuel" in self.current_action:
-            print(self.name, "is Refueling!")
-            val = int(self.current_action.replace("refuel ", ""))
-            self.fuel = self.fuel + val
-            print("Refueled: ", val)
+            if self.docked:
+                print(self.name, "is Refueling!")
+                val = int(self.current_action.replace("refuel ", ""))
+                if val >= 20:
+                    self.points = self.points - 10
+                self.fuel = self.fuel + val
+                self.total_fuel_used = self.total_fuel_used + val  # even if they don't use it, they took it
+                print(self.name, "Refueled: ", val)
+            else:
+                print(self.name, "tried to refuel in empty space!?")
+
             self.current_action = ""
 
         # Ran out of fuel, spinning forever
-        if self.fuel == 0:
+        if self.no_fuel():
             self.facing = self.facing + 90
         # ran out of moves, stuck
-        elif len(self.actions) == 0:
+        elif self.no_moves():
             self.facing = 45
+
+        if game_map[self.position[0]][self.position[1]] in "5":
+            print(self.name, "Finished and earned 20 points!")
+            self.finished = True
+            self.complete = True
+            self.points = self.points + 20
+            if not any_finished:
+                print(self.name, "Was one of the first ones and got 10 more points!")
+                self.points = self.points + 10
+
+    def is_dead(self):
+        return self.dead
+
+    def no_fuel(self):
+        return self.fuel < 1
+
+    def no_moves(self):
+        return self.current_action == "" and len(self.actions) == 0
 
     def debug_print(self):
         print("Debug Print Player:", self.current_action, self.position, self.facing, self.direction, self.fuel)

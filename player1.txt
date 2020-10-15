@@ -1,23 +1,7 @@
 forward 5
 turn left
-forward 1
+forward 2
 turn right
-forward 1
-turn right
-forward 1
-turn right
-forward 1
-turn right
-forward 1
-turn right
-forward 1
-turn left
-forward 1
-turn left
-forward 1
-turn left
-forward 1
-turn left
-forward 1
+forward 13
 dock
 refuel 10
