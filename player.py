@@ -52,7 +52,7 @@ class Player:
             if self.docked:
                 self.docked = False
 
-            if game_map[self.position[0]][self.position[1]] in "Aa-":
+            if game_map[self.position[0]][self.position[1]] in "Aa-!@#$%":
                 self.dead = True
                 self.complete = True
                 print(self.name, " crashed!!!")
