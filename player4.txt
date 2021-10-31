@@ -1,13 +1,39 @@
-forward 1
+turn left
+forward 2
 turn right
-forward 1
-forward 1
-forward 1
-forward 1
-forward 1
+forward 18
+dock
+refuel 10
+turn right
+forward 7
+turn left
+forward 9
 turn left
 forward 1
+dock
+refuel 10
+turn left
+forward 1
+turn left
+forward 7
+turn right
+forward 11
+dock
+refuel 10
+turn left
+turn left
+forward 15
+turn right
+forward 10
+dock
+refuel 10
+turn right
+forward 22
 turn right
 forward 1
-forward 1
-dock
+turn left
+forward 2
+turn right
+forward 2
+turn left
+forward 6

@@ -2,21 +2,16 @@ forward 5
 turn left
 forward 2
 turn right
-forward 13
-dock
-refuel 7
-forward 9
+forward 22
 turn right
 forward 6
 dock
-refuel 9
+refuel 15
 forward 5
 turn right
 forward 12
 turn left
 forward 2
-dock
-refuel 16
 turn left
 forward 15
 turn right
@@ -24,11 +19,6 @@ forward 10
 turn right
 forward 23
 turn right
-forward 1
-turn left
 forward 3
-turn right
-forward 2
 turn left
-forward 4
-dock
+forward 7

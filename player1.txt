@@ -4,4 +4,23 @@ forward 2
 turn right
 forward 13
 dock
-refuel 10
+refuel 19
+forward 9
+turn right
+forward 6
+forward 5
+turn right
+forward 12
+turn left
+forward 2
+turn left
+forward 15
+turn right
+forward 10
+turn right
+forward 23
+turn right
+forward 3
+turn left
+forward 7
+dock

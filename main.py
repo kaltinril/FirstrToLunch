@@ -226,14 +226,16 @@ def main():
     player3_list = load_command_file("player3.txt")
     player4_list = load_command_file("player4.txt")
     player5_list = load_command_file("player5.txt")
+    player6_list = load_command_file("player6.txt")
 
     p1 = Player('Chris', 10, player1_list)
     p2 = Player('Johnise', 10, player2_list)
     p3 = Player('Steve', 10, player3_list)
     p4 = Player('Marty', 10, player4_list)
     p5 = Player('Cé', 10, player5_list)
+    p6 = Player('Jeremy', 10, player6_list)
 
-    players = [p1, p2, p3, p4, p5]
+    players = [p1, p2, p3, p4, p5, p6]
 
     for p in players:
         p.set_position(start_pos.copy())
@@ -276,7 +278,7 @@ def main():
 
 
         # draw players
-        for i in range(0, 5):
+        for i in range(0, len(players)):
             new_sprite = rot_center(object_images[16], -players[i].facing)
             x = players[i].position[0] * 32
             y = players[i].position[1] * 32
@@ -301,7 +303,7 @@ def main():
         # wait 1 second before moving
         # dt is measured in milliseconds, therefore 250 ms = 0.25 seconds
         if time_elapsed_since_last_action > 250:
-            for i in range(0, 5):
+            for i in range(0, len(players)):
                 players[i].move(game_map, any_finished)
                 # players[i].debug_print()
             time_elapsed_since_last_action = 0  # reset it to 0 so you can count again
@@ -326,7 +328,7 @@ def main():
             least_id = 0
             least_value = 100000
             i = 0
-            for i in range(0, 5):
+            for i in range(0, len(players)):
                 if players[i].total_fuel_used < least_value:
                     least_value = players[i].total_fuel_used
                     least_id = i
@@ -334,7 +336,7 @@ def main():
             print(players[least_id].name, "Got 10 points for least fuel used overall!")
 
             # Check for players with more than 10 fuel left that finished
-            for i in range(0, 5):
+            for i in range(0, len(players)):
                 if players[i].finished:
                     if players[i].fuel > 10:
                         players[i].points = players[i].points - 5
@@ -344,7 +346,7 @@ def main():
             print("")
             print("====Final Point totals====")
             print("")
-            for i in range(0, 5):
+            for i in range(0, len(players)):
                 print(players[i].name, "got", players[i].points, "and had", players[i].fuel, "left over")
 
 
